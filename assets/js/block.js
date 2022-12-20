@@ -1,6 +1,7 @@
 const block = {
+    // code des touches Gauche, Haut, Droite et Bas
     keysAllowed: [37, 38, 39, 40],
-
+    // variables globales
     numTour: 0,
     container: null,
     containerRect: null,
@@ -10,24 +11,36 @@ const block = {
     initialBlockUserRect: null,
     initialBlockToMergeRect: null,
 
+    /**
+     * Initialisation
+     */
     init: function() {
-
+        // le container du jeu
         block.container = document.querySelector('.game-screen');
+        // taille et position du container du jeu 
         block.containerRect = document.querySelector('.game-screen').getBoundingClientRect();
-
+        // on créé les divs de départ : le bloc pilotable, le bloc cible
         block.createDivs();
-        
+        // on sauve la taille/position des blocs de départ
         block.initialBlockUserRect = document.querySelector('.blockUser').getBoundingClientRect();
         block.initialBlockToMergeRect = document.querySelector('.blockToMerge').getBoundingClientRect();
     },
 
+    /**
+     * Créé les divs de départ du jeu
+     * On le fait ici et pas dans le HTML car ça permet
+     * de placer les divs toujours aux mêmes emplacements
+     * par rapport à son container
+     */
     createDivs: function() {
+        // bloc pilotable
         const initBlockUser = document.createElement('div');
         initBlockUser.classList.add('blockUser');
         initBlockUser.style.top = (block.containerRect.top + 60) + "px";
         initBlockUser.style.left = (block.containerRect.left + ((block.containerRect.width/2)-15)) + "px";
         block.container.append(initBlockUser);
 
+        // bloc cible
         const initBlockToMerge = document.createElement('div');
         initBlockToMerge.classList.add('blockToMerge');
         initBlockToMerge.style.top = ((block.containerRect.top + block.containerRect.height) - 90) + "px";
@@ -35,47 +48,72 @@ const block = {
         block.container.append(initBlockToMerge);     
     },
 
+    /**
+     * Handler pour l'appui sur une touche
+     * @param {*} event 
+     */
     handleKeyDown: function(event) {
-        block.blocksUser = document.getElementsByClassName('blockUser');
-
-        block.blockToMerge = document.querySelector('.blockToMerge');
-        if (block.blockToMerge !== null) {
-            block.blockToMergeRect = block.blockToMerge.getBoundingClientRect();
-        }
- 
+        // on récupère la touche pressée
         const key = event.keyCode;
+        // on vérifie qu'on a bien appuyé sur une des flèches directionnelles
         if (block.keysAllowed.includes(key)) {
-            if (key === 37) {block.moveLeft();}
-            else if (key === 38){block.moveUp();}
-            else if (key === 39){block.moveRight();}
-            else if (key === 40){block.moveDown();}
 
-            if (block.getSideBlockInTouch()) {                
+            // on récupère le bloc pilotable
+            block.blocksUser = document.getElementsByClassName('blockUser');
+            // on récupère aussi le bloc cible
+            block.blockToMerge = document.querySelector('.blockToMerge');
+            if (block.blockToMerge !== null) {
+                // si le bloc cible existe bien, on récupère sa taille/position
+                block.blockToMergeRect = block.blockToMerge.getBoundingClientRect();
+            }
+
+            if (key === 37) {block.moveLeft();} // appui sur Gauche
+            else if (key === 38){block.moveUp();} // appui sur Haut
+            else if (key === 39){block.moveRight();} // appui sur Droite
+            else if (key === 40){block.moveDown();} // appui sur Bas
+ 
+            // on vérifie si le bloc piotable touche un des bords du bloc cible
+            if (block.getSideBlockInTouch()) { 
+                // c'est le cas
+                // on va faire du bloc cible une partie du bloc pilotable :
+                // on supprime la classe du bloc cible               
                 block.blockToMerge.classList.remove('blockToMerge');
+                // on lui ajoute la classe spécifique au bloc pilotable
                 block.blockToMerge.classList.add('blockUser');
-                block.blockToMerge.style.left = block.blockToMergeRect.left + "px";
-                block.blockToMerge.style.top = block.blockToMergeRect.top + "px";
+                // on lui remet sa position d'origine (à priori pas besoin de le faire)
+                /*block.blockToMerge.style.left = block.blockToMergeRect.left + "px";
+                block.blockToMerge.style.top = block.blockToMergeRect.top + "px";*/
 
-                // on génère un nouveau block
+                // on génère un nouveau block cible
                 const newBlock = document.createElement('div');
+                // on lui donne la classe spécifique au bloc cible
                 newBlock.classList.add('blockToMerge');
+
                 if (block.isEven(block.numTour)) {
-                    // on recréé la div en haut
+                    // le n° du tour de jeu est pair :
+                    // on a donc mergé les blocs en bas de l'aire de jeu                    
+                    // on recréé le bloc cible en haut
                     newBlock.style.top = block.initialBlockUserRect.top + "px";
                     newBlock.style.left = block.initialBlockUserRect.left + "px";
                 } else {
-                    // on recréé la div en bas
+                    // le n° du tour de jeu est impair :
+                    // on a donc mergé les blocs en haut de l'aire de jeu                    
+                    // on recréé le bloc cible en bas
                     newBlock.style.top = block.initialBlockToMergeRect.top + "px";
                     newBlock.style.left = block.initialBlockToMergeRect.left + "px";
                 }
-
+                // on ajoute le bloc au container
                 block.container.append(newBlock);
-
+                // on incrémente le n° du tour
                 block.numTour++;
             }
         }
     },
 
+    /**
+     * Bouge le tas de blocs pilotable vers la gauche
+     * @returns 
+     */
     moveLeft: function() {
         let canMove = true;
         for (blockUser of block.blocksUser) {
@@ -95,6 +133,10 @@ const block = {
         }
     },
 
+    /**
+     * Bouge le tas de blocs pilotable vers la droite
+     * @returns 
+     */    
     moveRight: function() {
         let canMove = true;
         for (blockUser of block.blocksUser) {
@@ -114,6 +156,10 @@ const block = {
         }
     },    
 
+    /**
+     * Bouge le tas de blocs pilotable vers le haut
+     * @returns 
+     */    
     moveUp: function() {
         let canMove = true;
         for (blockUser of block.blocksUser) {
@@ -133,6 +179,10 @@ const block = {
         }
     },   
     
+    /**
+     * Bouge le tas de blocs pilotable vers le bas
+     * @returns 
+     */
     moveDown: function() {
         let canMove = true;
         // on regarde d'abord s'il y a une div qui risque de sortir du cadre
@@ -153,6 +203,10 @@ const block = {
         }
     },
 
+    /**
+     * Vérifie si le groupe de blocs pilotables touche le bloc cible sur un des côtés
+     * @returns 
+     */
     getSideBlockInTouch: function() {
         let isInTouch = false;
         for (blockUser of block.blocksUser) {

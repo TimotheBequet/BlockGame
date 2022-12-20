@@ -37,9 +37,11 @@ html, body, .container {
 }
 
 .blockUser {  
-    background-color: saddlebrown;  
+    background-color: saddlebrown; 
+    box-shadow: 0 0 10px saddlebrown; 
 }
 
 .blockToMerge {
     background-color: rgb(42, 110, 62);
+    box-shadow: 0 0 10px rgb(42, 110, 62); 
 }
