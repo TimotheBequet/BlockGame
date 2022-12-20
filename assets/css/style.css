@@ -1,0 +1,29 @@
+html, body, .container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.container {
+    /* position: relative; */
+    background-color: beige;
+    width: 720px;
+    height: 600px;
+}
+
+.blockUser, .blockToMerge {
+    background-color: saddlebrown;
+    position: absolute;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+.blockUser {    
+    top: 60px;    
+}
+
+.blockToMerge {
+    top: 480px;
+}
