@@ -6,24 +6,40 @@ html, body, .container {
 }
 
 .container {
-    /* position: relative; */
-    background-color: beige;
-    width: 720px;
-    height: 600px;
+    display: flex;    
 }
 
-.blockUser, .blockToMerge {
-    background-color: saddlebrown;
+.left-side {
+    width: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: burlywood;
+}
+
+.right-side {
+    width: 45%;
+    background-color: cadetblue;
+}
+
+.game-screen {
+    text-align: center;
+    background-color: beige;
+    box-shadow: 0 0 2rem rgb(87, 87, 87);
+    width: 750px;
+    height: 630px;
+}
+
+.blockUser, .blockToMerge {    
     position: absolute;
-    left: 50%;
     width: 30px;
     height: 30px;
 }
 
-.blockUser {    
-    top: 60px;    
+.blockUser {  
+    background-color: saddlebrown;  
 }
 
 .blockToMerge {
-    top: 480px;
+    background-color: rgb(42, 110, 62);
 }

@@ -1,5 +1,6 @@
 const app = {
     init: function() {
+        block.init();
         document.addEventListener('keydown', block.handleKeyDown);
     },
 }
