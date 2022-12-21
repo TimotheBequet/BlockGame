@@ -19,6 +19,9 @@ html, body, .container {
 
 .right-side {
     width: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
     background-color: cadetblue;
 }
 
@@ -44,4 +47,19 @@ html, body, .container {
 .blockToMerge {
     background-color: rgb(42, 110, 62);
     box-shadow: 0 0 10px rgb(42, 110, 62); 
+}
+
+.example-screen {
+    text-align: center;
+    background-color: beige;
+    box-shadow: 0 0 2rem rgb(87, 87, 87);
+    width: 750px;
+    height: 630px;
+}
+
+.blockExample {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: cornflowerblue;    
 }

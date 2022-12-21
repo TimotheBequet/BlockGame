@@ -5,6 +5,8 @@ const block = {
     numTour: 0,
     container: null,
     containerRect: null,
+    containerExample: null,
+    containerExampleRect: null,
     blocksUser: null,
     blockToMerge: null,
     blockToMergeRect: null,
@@ -15,10 +17,16 @@ const block = {
      * Initialisation
      */
     init: function() {
+        // le container de l'exemple 
+        block.containerExample = document.querySelector('.example-screen');
+        // taille et position du container de l'exemple
+        block.containerExampleRect = block.containerExample.getBoundingClientRect();
+        // on créé l'exemple
+        block.generateBlocksExamples();
         // le container du jeu
         block.container = document.querySelector('.game-screen');
         // taille et position du container du jeu 
-        block.containerRect = document.querySelector('.game-screen').getBoundingClientRect();
+        block.containerRect = block.container.getBoundingClientRect();
         // on créé les divs de départ : le bloc pilotable, le bloc cible
         block.createDivs();
         // on sauve la taille/position des blocs de départ
@@ -105,7 +113,7 @@ const block = {
                 // on ajoute le bloc au container
                 block.container.append(newBlock);
                 // on incrémente le n° du tour
-                block.numTour++;
+                block.numTour++;            
             }
         }
     },
@@ -246,5 +254,31 @@ const block = {
     isEven: function(number) {
         return (number % 2 == 0);
     },
+
+    generateBlocksExamples: function() {
+        // on va générer 10 blocks
+        // on génère le 1er block au centre du container
+        const div = document.createElement('div');
+        div.classList.add('blockExample');
+        div.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px"; 
+        div.style.top = (block.containerExampleRect.top + ((block.containerExampleRect.height/2)-15)) + "px"; 
+        block.containerExample.append(div);
+        for (const i = 0; i < 10; i++) {
+            const divSupp = document.createElement('div');
+            divSupp.classList.add('blockExample');
+            div.style.left = (block.containerRect.left + ((block.containerRect.width/2)-15)) + "px";
+        }
+    },
+
+    getDirectionNewBlock: function(previousDirection) {
+        // tableau qui contien les directions et leur contraire
+        const directions = {'E': 'O', 'O': 'E', 'N': 'S', 'S': 'N'};
+        for (const direction in directions) {
+            if (directions[direction] === previousDirection) {
+                directions.delete(direction);
+                return;
+            }
+        }
+    }
    
 }
