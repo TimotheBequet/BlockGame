@@ -10,8 +10,15 @@ const block = {
     blocksUser: null,
     blockToMerge: null,
     blockToMergeRect: null,
+    initialBlockUser: null,
+    initialBlockUserTop: 0,
+    initialBlockUserLeft: 0,
     initialBlockUserRect: null,
+    initialBlockToMerge: null,
     initialBlockToMergeRect: null,
+    initialBlockToMergeTop: 0,
+    initialBlockToMergeLeft: 0,
+    rotate: 0,
 
     /**
      * Initialisation
@@ -27,11 +34,24 @@ const block = {
         block.container = document.querySelector('.game-screen');
         // taille et position du container du jeu 
         block.containerRect = block.container.getBoundingClientRect();
+        block.initVariables();
         // on créé les divs de départ : le bloc pilotable, le bloc cible
         block.createDivs();
         // on sauve la taille/position des blocs de départ
-        block.initialBlockUserRect = document.querySelector('.blockUser').getBoundingClientRect();
-        block.initialBlockToMergeRect = document.querySelector('.blockToMerge').getBoundingClientRect();
+        block.initialBlockUser = document.querySelector('.blockUser');
+        block.initialBlockUserRect = block.initialBlockUser.getBoundingClientRect();
+        block.initialBlockToMerge = document.querySelector('.blockToMerge');
+        block.initialBlockToMergeRect = block.initialBlockToMerge.getBoundingClientRect();
+    },
+
+    /**
+     * 
+     */
+    initVariables: function() {
+        block.initialBlockUserTop = "60px";
+        block.initialBlockUserLeft = ((block.containerRect.width/2)-15) + "px";
+        block.initialBlockToMergeTop = (block.containerRect.height - 90) + "px";
+        block.initialBlockToMergeLeft = ((block.containerRect.width/2)-15) + "px"; 
     },
 
     /**
@@ -44,15 +64,15 @@ const block = {
         // bloc pilotable
         const initBlockUser = document.createElement('div');
         initBlockUser.classList.add('blockUser');
-        initBlockUser.style.top = (block.containerRect.top + 60) + "px";
-        initBlockUser.style.left = (block.containerRect.left + ((block.containerRect.width/2)-15)) + "px";
+        initBlockUser.style.top = block.initialBlockUserTop;
+        initBlockUser.style.left = block.initialBlockUserLeft;
         block.container.append(initBlockUser);
 
         // bloc cible
         const initBlockToMerge = document.createElement('div');
         initBlockToMerge.classList.add('blockToMerge');
-        initBlockToMerge.style.top = ((block.containerRect.top + block.containerRect.height) - 90) + "px";
-        initBlockToMerge.style.left = (block.containerRect.left + ((block.containerRect.width/2)-15)) + "px"; 
+        initBlockToMerge.style.top = block.initialBlockToMergeTop;
+        initBlockToMerge.style.left = block.initialBlockToMergeLeft; 
         block.container.append(initBlockToMerge);     
     },
 
@@ -65,8 +85,7 @@ const block = {
         const key = event.keyCode;
         // on vérifie qu'on a bien appuyé sur une des flèches directionnelles
         if (block.keysAllowed.includes(key)) {
-
-            // on récupère le bloc pilotable
+            // on récupère les blocs pilotable
             block.blocksUser = document.getElementsByClassName('blockUser');
             // on récupère aussi le bloc cible
             block.blockToMerge = document.querySelector('.blockToMerge');
@@ -88,9 +107,6 @@ const block = {
                 block.blockToMerge.classList.remove('blockToMerge');
                 // on lui ajoute la classe spécifique au bloc pilotable
                 block.blockToMerge.classList.add('blockUser');
-                // on lui remet sa position d'origine (à priori pas besoin de le faire)
-                /*block.blockToMerge.style.left = block.blockToMergeRect.left + "px";
-                block.blockToMerge.style.top = block.blockToMergeRect.top + "px";*/
 
                 // on génère un nouveau block cible
                 const newBlock = document.createElement('div');
@@ -101,17 +117,22 @@ const block = {
                     // le n° du tour de jeu est pair :
                     // on a donc mergé les blocs en bas de l'aire de jeu                    
                     // on recréé le bloc cible en haut
-                    newBlock.style.top = block.initialBlockUserRect.top + "px";
-                    newBlock.style.left = block.initialBlockUserRect.left + "px";
+                    newBlock.style.top = block.initialBlockUserTop;
+                    newBlock.style.left = block.initialBlockUserLeft;
                 } else {
                     // le n° du tour de jeu est impair :
                     // on a donc mergé les blocs en haut de l'aire de jeu                    
                     // on recréé le bloc cible en bas
-                    newBlock.style.top = block.initialBlockToMergeRect.top + "px";
-                    newBlock.style.left = block.initialBlockToMergeRect.left + "px";
+                    newBlock.style.top = block.initialBlockToMergeTop;
+                    newBlock.style.left = block.initialBlockToMergeLeft;
                 }
                 // on ajoute le bloc au container
                 block.container.append(newBlock);
+
+                /* TEST ROTATION DU CONTAINER */
+                block.setVariableRotation(90);
+                block.container.style.transform = `rotate(${block.rotate}deg)`;
+                              
                 // on incrémente le n° du tour
                 block.numTour++;            
             }
@@ -119,24 +140,57 @@ const block = {
     },
 
     /**
+     * 
+     * @param {string} direction 
+     * @returns TRUE si on peut bouger, FALSE sinon
+     */
+    checkCanMove: function(direction) {
+        let canMove = true;
+        for (blockUser of block.blocksUser) {
+            const blockUserRect = blockUser.getBoundingClientRect();
+            const containerRect = block.container.getBoundingClientRect();
+            if (   (direction == 'L' && block.rotate == 0)
+                || (direction == 'R' && block.rotate == 180)
+                || (direction == 'U' && block.rotate == 270)
+                || (direction == 'D' && block.rotate == 90)
+               ) {
+                canMove = (blockUserRect.left > containerRect.left);
+            } else if (   (direction == 'L' && block.rotate == 90)
+                       || (direction == 'R' && block.rotate == 270)
+                       || (direction == 'U' && block.rotate == 0)
+                       || (direction == 'D' && block.rotate == 180)
+               ) {
+                canMove = (blockUserRect.top > containerRect.top);
+            } else if (   (direction == 'L' && block.rotate == 180)
+                       || (direction == 'R' && block.rotate == 0)
+                       || (direction == 'U' && block.rotate == 90)
+                       || (direction == 'D' && block.rotate == 270)
+               ) {
+                canMove = ((blockUserRect.left + blockUserRect.width) < (containerRect.left + block.containerRect.width));
+            } else if (   (direction == 'L' && block.rotate == 270)
+                       || (direction == 'R' && block.rotate == 90)
+                       || (direction == 'U' && block.rotate == 180)
+                       || (direction == 'D' && block.rotate == 0)
+               ) {
+                canMove = ((blockUserRect.top + blockUserRect.height) < (containerRect.top + block.containerRect.height));
+            }
+            if (!canMove) {
+                break;
+            }
+        }
+        return canMove;
+    },
+
+    /**
      * Bouge le tas de blocs pilotable vers la gauche
      * @returns 
      */
     moveLeft: function() {
-        let canMove = true;
-        for (blockUser of block.blocksUser) {
-            blockUserRect = blockUser.getBoundingClientRect();
-            if (blockUserRect.left <= block.containerRect.left) {
-                canMove = false;
-                return;
-            }
-        }
-
-        if (canMove) {
+        if (block.checkCanMove('L')) {
             for (blockUser of block.blocksUser) {
-                blockUserRect = blockUser.getBoundingClientRect();
-                const left = blockUserRect.left - blockUserRect.width + "px";
-                blockUser.style.left = left;
+                const blockUserRect = blockUser.getBoundingClientRect();
+                const left = blockUser.offsetLeft - blockUserRect.width;
+                blockUser.style.left = left + "px";
             }            
         }
     },
@@ -146,19 +200,10 @@ const block = {
      * @returns 
      */    
     moveRight: function() {
-        let canMove = true;
-        for (blockUser of block.blocksUser) {
-            blockUserRect = blockUser.getBoundingClientRect();
-            if ((blockUserRect.left + blockUserRect.width) >= (block.containerRect.left + block.containerRect.width)) {
-                canMove = false;
-                return;
-            }
-        }
-
-        if (canMove) {
+        if (block.checkCanMove('R')) {
             for (blockUser of block.blocksUser) {
-                blockUserRect = blockUser.getBoundingClientRect();
-                const left = blockUserRect.left + blockUserRect.width;
+                const blockUserRect = blockUser.getBoundingClientRect();
+                const left = blockUser.offsetLeft + blockUserRect.width;
                 blockUser.style.left = left + "px";
             }            
         }
@@ -169,20 +214,11 @@ const block = {
      * @returns 
      */    
     moveUp: function() {
-        let canMove = true;
-        for (blockUser of block.blocksUser) {
-            blockUserRect = blockUser.getBoundingClientRect();        
-            if (blockUserRect.top <= block.containerRect.top) {
-                canMove = false;
-                return;
-            }
-        }
-
-        if (canMove) {
+        if (block.checkCanMove('U')) {
             for (blockUser of block.blocksUser) {
-                blockUserRect = blockUser.getBoundingClientRect();                     
-                const up = blockUserRect.top - blockUserRect.height + "px";
-                blockUser.style.top = up;                            
+                const blockUserRect = blockUser.getBoundingClientRect();                    
+                const up = blockUser.offsetTop - blockUserRect.height;
+                blockUser.style.top = up + "px";                       
             }            
         }
     },   
@@ -192,20 +228,10 @@ const block = {
      * @returns 
      */
     moveDown: function() {
-        let canMove = true;
-        // on regarde d'abord s'il y a une div qui risque de sortir du cadre
-        for (blockUser of block.blocksUser) {
-            blockUserRect = blockUser.getBoundingClientRect(); 
-            if ((blockUserRect.top + blockUserRect.height) >= (block.containerRect.top + block.containerRect.height)) {
-                canMove = false;
-                return;
-            }
-        }
-
-        if (canMove) {
+        if (block.checkCanMove('D')) {
             for (blockUser of block.blocksUser) {
-                blockUserRect = blockUser.getBoundingClientRect(); 
-                const up = blockUserRect.top + blockUserRect.height;
+                const blockUserRect = blockUser.getBoundingClientRect(); 
+                const up = blockUser.offsetTop + blockUserRect.height;
                 blockUser.style.top = up + "px";                
             }            
         }
@@ -218,7 +244,7 @@ const block = {
     getSideBlockInTouch: function() {
         let isInTouch = false;
         for (blockUser of block.blocksUser) {
-            blockUserRect = blockUser.getBoundingClientRect(); 
+            const blockUserRect = blockUser.getBoundingClientRect(); 
 
             if (   blockUserRect.left == (block.blockToMergeRect.left + block.blockToMergeRect.width)
                 && blockUserRect.top == block.blockToMergeRect.top
@@ -248,13 +274,16 @@ const block = {
 
     /**
      * Check si un nombre donné est pair
-     * @param {*} number 
+     * @param {int} number 
      * @returns TRUE si nombre pair, FALSE sinon
      */
     isEven: function(number) {
         return (number % 2 == 0);
     },
 
+    /**
+     * 
+     */
     generateBlocksExamples: function() {
         // on va générer 10 blocks
         // on génère le 1er block au centre du container
@@ -263,13 +292,20 @@ const block = {
         div.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px"; 
         div.style.top = (block.containerExampleRect.top + ((block.containerExampleRect.height/2)-15)) + "px"; 
         block.containerExample.append(div);
-        for (const i = 0; i < 10; i++) {
-            const divSupp = document.createElement('div');
+        /* for (let i = 0; i < 10; i++) {
+            let divSupp = document.createElement('div');
             divSupp.classList.add('blockExample');
-            div.style.left = (block.containerRect.left + ((block.containerRect.width/2)-15)) + "px";
-        }
+            block.containerExample.append(divSupp);
+            console.log(divSupp.style);
+            divSupp.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px";
+        } */
     },
 
+    /**
+     * 
+     * @param {string} previousDirection 
+     * @returns 
+     */
     getDirectionNewBlock: function(previousDirection) {
         // tableau qui contien les directions et leur contraire
         const directions = {'E': 'O', 'O': 'E', 'N': 'S', 'S': 'N'};
@@ -279,6 +315,16 @@ const block = {
                 return;
             }
         }
-    }
-   
+    },
+
+    /**
+     * 
+     * @param {int} angle 
+     */
+    setVariableRotation: function(angle) {
+        block.rotate += angle;
+        if (block.rotate > 360) {
+            block.rotate = 90;
+        }
+    },
 }

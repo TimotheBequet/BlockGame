@@ -6,11 +6,11 @@ html, body, .container {
 }
 
 .container {
-    display: flex;    
+    display: flex;   
 }
 
 .left-side {
-    width: 55%;
+    width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,7 +18,7 @@ html, body, .container {
 }
 
 .right-side {
-    width: 45%;
+    width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;    
@@ -26,12 +26,30 @@ html, body, .container {
 }
 
 .game-screen {
+    position: relative;
     text-align: center;
     background-color: beige;
     box-shadow: 0 0 2rem rgb(87, 87, 87);
-    width: 750px;
+    width: 630px;
     height: 630px;
+    transition: transform 1s ease-in-out; 
 }
+
+/* .diago1 {
+    position: relative;
+    border-bottom: 1px solid black;
+    left: 315px;
+    transform: rotate(90deg);
+    transform-origin: left;
+    width: 630px;
+}
+
+.diago2 {
+    position: relative;
+    border-bottom: 1px solid red;
+    top: 315px;
+    width: 630px;
+} */
 
 .blockUser, .blockToMerge {    
     position: absolute;
@@ -49,11 +67,15 @@ html, body, .container {
     box-shadow: 0 0 10px rgb(42, 110, 62); 
 }
 
+.newBlock {
+    position: absolute;
+}
+
 .example-screen {
     text-align: center;
     background-color: beige;
     box-shadow: 0 0 2rem rgb(87, 87, 87);
-    width: 750px;
+    width: 630px;
     height: 630px;
 }
 
