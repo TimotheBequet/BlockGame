@@ -291,13 +291,16 @@ const block = {
         div.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px"; 
         div.style.top = (block.containerExampleRect.top + ((block.containerExampleRect.height/2)-15)) + "px"; 
         block.containerExample.append(div);
-        /* for (let i = 0; i < 10; i++) {
-            let divSupp = document.createElement('div');
+        let direction = "";
+        for (let i = 0; i < 10; i++) {
+            /*let divSupp = document.createElement('div');
             divSupp.classList.add('blockExample');
             block.containerExample.append(divSupp);
             console.log(divSupp.style);
-            divSupp.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px";
-        } */
+            divSupp.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px";*/
+            direction = block.getDirectionNewBlock(direction);
+            console.log(direction);
+        }
     },
 
     /**
@@ -305,15 +308,17 @@ const block = {
      * @param {string} previousDirection 
      * @returns 
      */
-    getDirectionNewBlock: function(previousDirection) {
-        // tableau qui contien les directions et leur contraire
+    getDirectionNewBlock: function(previousDirection = "") {
+        // tableau qui contient les directions et leur contraire
         const directions = {'E': 'O', 'O': 'E', 'N': 'S', 'S': 'N'};
+        let listDirections = [];
         for (const direction in directions) {
-            if (directions[direction] === previousDirection) {
-                directions.delete(direction);
-                return;
+            if (directions[direction] !== previousDirection) {
+                listDirections.push(direction);
             }
         }
+
+        return listDirections[Math.floor(Math.random() * listDirections.length)]; // pas la bonne solution
     },
 
     /**
