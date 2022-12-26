@@ -286,20 +286,40 @@ const block = {
     generateBlocksExamples: function() {
         // on va générer 10 blocks
         // on génère le 1er block au centre du container
-        const div = document.createElement('div');
+        let div = document.createElement('div');
         div.classList.add('blockExample');
         div.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px"; 
         div.style.top = (block.containerExampleRect.top + ((block.containerExampleRect.height/2)-15)) + "px"; 
         block.containerExample.append(div);
+        let divRect = div.getBoundingClientRect();
+        let blockLeft = divRect.left;
+        let blockTop = divRect.top;
+        console.log(blockLeft);
+        console.log(blockTop);
         let direction = "";
         for (let i = 0; i < 10; i++) {
-            /*let divSupp = document.createElement('div');
+            let divSupp = document.createElement('div');
             divSupp.classList.add('blockExample');
-            block.containerExample.append(divSupp);
-            console.log(divSupp.style);
-            divSupp.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px";*/
             direction = block.getDirectionNewBlock(direction);
-            console.log(direction);
+            if (direction == 'E') {
+                divSupp.style.left = (blockLeft + 30) + "px";
+                divSupp.style.top = blockTop + "px";
+            } else if (direction == 'O') {
+                divSupp.style.left = (blockLeft - 30) + "px";
+                divSupp.style.top = blockTop + "px";
+            } else if (direction == 'N') {
+                divSupp.style.left = blockLeft + "px";
+                divSupp.style.top = (blockTop - 30) + "px";
+            } else if (direction == 'S') {
+                divSupp.style.left = blockLeft + "px";
+                divSupp.style.top = (blockTop + 30) + "px";
+            }
+            block.containerExample.append(divSupp);
+            divRect = divSupp.getBoundingClientRect();
+            blockLeft = divRect.left;
+            blockTop = divRect.top;
+            
+            //console.log(direction);
         }
     },
 
@@ -308,7 +328,7 @@ const block = {
      * @param {string} previousDirection 
      * @returns 
      */
-    getDirectionNewBlock: function(previousDirection = "") {
+    getDirectionNewBlock: function(previousDirection) {
         // tableau qui contient les directions et leur contraire
         const directions = {'E': 'O', 'O': 'E', 'N': 'S', 'S': 'N'};
         let listDirections = [];

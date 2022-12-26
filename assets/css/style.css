@@ -35,22 +35,6 @@ html, body, .container {
     transition: transform 1s ease-in-out; 
 }
 
-/* .diago1 {
-    position: relative;
-    border-bottom: 1px solid black;
-    left: 315px;
-    transform: rotate(90deg);
-    transform-origin: left;
-    width: 630px;
-}
-
-.diago2 {
-    position: relative;
-    border-bottom: 1px solid red;
-    top: 315px;
-    width: 630px;
-} */
-
 .blockUser, .blockToMerge {    
     position: absolute;
     width: 30px;
@@ -84,4 +68,5 @@ html, body, .container {
     width: 30px;
     height: 30px;
     background-color: cornflowerblue;    
+    box-shadow: 0 0 10px rgb(97, 135, 206); 
 }
