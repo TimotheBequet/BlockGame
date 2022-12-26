@@ -10,15 +10,12 @@ const block = {
     blocksUser: null,
     blockToMerge: null,
     blockToMergeRect: null,
-    initialBlockUser: null,
     initialBlockUserTop: 0,
     initialBlockUserLeft: 0,
-    initialBlockUserRect: null,
-    initialBlockToMerge: null,
-    initialBlockToMergeRect: null,
     initialBlockToMergeTop: 0,
     initialBlockToMergeLeft: 0,
     rotate: 0,
+    canMoveBlock: true,
 
     /**
      * Initialisation
@@ -37,11 +34,6 @@ const block = {
         block.initVariables();
         // on créé les divs de départ : le bloc pilotable, le bloc cible
         block.createDivs();
-        // on sauve la taille/position des blocs de départ
-        block.initialBlockUser = document.querySelector('.blockUser');
-        block.initialBlockUserRect = block.initialBlockUser.getBoundingClientRect();
-        block.initialBlockToMerge = document.querySelector('.blockToMerge');
-        block.initialBlockToMergeRect = block.initialBlockToMerge.getBoundingClientRect();
     },
 
     /**
@@ -84,7 +76,7 @@ const block = {
         // on récupère la touche pressée
         const key = event.keyCode;
         // on vérifie qu'on a bien appuyé sur une des flèches directionnelles
-        if (block.keysAllowed.includes(key)) {
+        if (block.keysAllowed.includes(key) && block.canMoveBlock) {
             // on récupère les blocs pilotable
             block.blocksUser = document.getElementsByClassName('blockUser');
             // on récupère aussi le bloc cible
@@ -101,6 +93,8 @@ const block = {
  
             // on vérifie si le bloc piotable touche un des bords du bloc cible
             if (block.getSideBlockInTouch()) { 
+                // on bloque l'action sur l'appui des touches
+                block.canMoveBlock = false;
                 // c'est le cas
                 // on va faire du bloc cible une partie du bloc pilotable :
                 // on supprime la classe du bloc cible               
@@ -131,7 +125,12 @@ const block = {
 
                 /* TEST ROTATION DU CONTAINER */
                 block.setVariableRotation(90);
+                // on fait la rotation du container
                 block.container.style.transform = `rotate(${block.rotate}deg)`;
+                // après l'animation, on débloque l'action sur l'appui des touches
+                setTimeout(() => {
+                    block.canMoveBlock = true;
+                }, 1100);
                               
                 // on incrémente le n° du tour
                 block.numTour++;            
