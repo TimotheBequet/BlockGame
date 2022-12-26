@@ -297,9 +297,13 @@ const block = {
         console.log(blockLeft);
         console.log(blockTop);
         let direction = "";
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             let divSupp = document.createElement('div');
             divSupp.classList.add('blockExample');
+            // mettre tout ça dans une fonction
+            // vérifier que le bloc à créer n'est pas sur un emplacement déjà pris
+            // sinon relancer la fonction
+            // boucle do/while peut-être
             direction = block.getDirectionNewBlock(direction);
             if (direction == 'E') {
                 divSupp.style.left = (blockLeft + 30) + "px";
