@@ -40,9 +40,9 @@ const block = {
      * 
      */
     initVariables: function() {
-        block.initialBlockUserTop = "60px";
+        block.initialBlockUserTop = "90px";
         block.initialBlockUserLeft = ((block.containerRect.width/2)-15) + "px";
-        block.initialBlockToMergeTop = (block.containerRect.height - 90) + "px";
+        block.initialBlockToMergeTop = (block.containerRect.height - 120) + "px";
         block.initialBlockToMergeLeft = ((block.containerRect.width/2)-15) + "px"; 
     },
 
@@ -124,9 +124,9 @@ const block = {
                 block.container.append(newBlock);
 
                 /* TEST ROTATION DU CONTAINER */
-                block.setVariableRotation(90);
+                //block.setVariableRotation(90);
                 // on fait la rotation du container
-                block.container.style.transform = `rotate(${block.rotate}deg)`;
+                //block.container.style.transform = `rotate(${block.rotate}deg)`;
                 // après l'animation, on débloque l'action sur l'appui des touches
                 setTimeout(() => {
                     block.canMoveBlock = true;
@@ -134,6 +134,12 @@ const block = {
                               
                 // on incrémente le n° du tour
                 block.numTour++;            
+            }
+
+            if (block.numTour == 14) {
+                // dernier block mergé
+                // faut vérifier que la forme finale correspond au dessin d'exemple
+                console.log('STOP');
             }
         }
     },
@@ -248,22 +254,18 @@ const block = {
             if (   blockUserRect.left == (block.blockToMergeRect.left + block.blockToMergeRect.width)
                 && blockUserRect.top == block.blockToMergeRect.top
             ) {
-                console.log('ça touche à droite');
                 isInTouch = true;
             } else if (   blockUserRect.left == block.blockToMergeRect.left
                     && (blockUserRect.top + blockUserRect.height) == block.blockToMergeRect.top
                      ) {
-                console.log('ça touche en haut');
                 isInTouch = true;
             } else if (   (blockUserRect.left + blockUserRect.width) == block.blockToMergeRect.left
                     && blockUserRect.top == block.blockToMergeRect.top
                      ) {
-                console.log('ça touche à gauche');
                 isInTouch = true;
             } else if (   blockUserRect.top == (block.blockToMergeRect.top + block.blockToMergeRect.height)
                     && blockUserRect.left == block.blockToMergeRect.left
                      ) {
-                console.log('ça touche en bas');
                 isInTouch = true;
             } 
         }
@@ -290,41 +292,59 @@ const block = {
         div.classList.add('blockExample');
         div.style.left = (block.containerExampleRect.left + ((block.containerExampleRect.width/2)-15)) + "px"; 
         div.style.top = (block.containerExampleRect.top + ((block.containerExampleRect.height/2)-15)) + "px"; 
+        //div.textContent = 1;
         block.containerExample.append(div);
         let divRect = div.getBoundingClientRect();
         let blockLeft = divRect.left;
         let blockTop = divRect.top;
-        console.log(blockLeft);
-        console.log(blockTop);
         let direction = "";
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 14; i++) {
             let divSupp = document.createElement('div');
+            divSupp.classList.add('wip');
+            direction = block.positionneBlockExample(divSupp, direction, blockLeft, blockTop);
+            divSupp.classList.remove('wip');
             divSupp.classList.add('blockExample');
-            // mettre tout ça dans une fonction
-            // vérifier que le bloc à créer n'est pas sur un emplacement déjà pris
-            // sinon relancer la fonction
-            // boucle do/while peut-être
-            direction = block.getDirectionNewBlock(direction);
-            if (direction == 'E') {
-                divSupp.style.left = (blockLeft + 30) + "px";
-                divSupp.style.top = blockTop + "px";
-            } else if (direction == 'O') {
-                divSupp.style.left = (blockLeft - 30) + "px";
-                divSupp.style.top = blockTop + "px";
-            } else if (direction == 'N') {
-                divSupp.style.left = blockLeft + "px";
-                divSupp.style.top = (blockTop - 30) + "px";
-            } else if (direction == 'S') {
-                divSupp.style.left = blockLeft + "px";
-                divSupp.style.top = (blockTop + 30) + "px";
-            }
+            //divSupp.textContent = i+2;
             block.containerExample.append(divSupp);
             divRect = divSupp.getBoundingClientRect();
             blockLeft = divRect.left;
             blockTop = divRect.top;
             
-            //console.log(direction);
         }
+    },
+
+    /**
+     * 
+     * @param {*} divBlock 
+     * @param {*} direction 
+     * @param {*} blockLeft 
+     * @param {*} blockTop 
+     * @returns 
+     */
+    positionneBlockExample: function(divBlock, direction, blockLeft, blockTop) {
+        direction = block.getDirectionNewBlock(direction);
+        if (direction == 'E') {
+            divBlock.style.left = (blockLeft + 30) + "px";
+            divBlock.style.top = blockTop + "px";
+        } else if (direction == 'O') {
+            divBlock.style.left = (blockLeft - 30) + "px";
+            divBlock.style.top = blockTop + "px";
+        } else if (direction == 'N') {
+            divBlock.style.left = blockLeft + "px";
+            divBlock.style.top = (blockTop - 30) + "px";
+        } else if (direction == 'S') {
+            divBlock.style.left = blockLeft + "px";
+            divBlock.style.top = (blockTop + 30) + "px";
+        }
+
+        const blocksPositionned = document.getElementsByClassName('blockExample');
+        for (const oneBlock of blocksPositionned) {
+            if (oneBlock.style.left == divBlock.style.left && oneBlock.style.top == divBlock.style.top) {
+                block.positionneBlockExample(divBlock, direction, blockLeft, blockTop);
+            }
+        }
+
+        return direction;
     },
 
     /**
@@ -342,7 +362,7 @@ const block = {
             }
         }
 
-        return listDirections[Math.floor(Math.random() * listDirections.length)]; // pas la bonne solution
+        return listDirections[Math.floor(Math.random() * listDirections.length)];
     },
 
     /**
